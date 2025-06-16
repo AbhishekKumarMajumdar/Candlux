@@ -1,12 +1,80 @@
 'use client';
 
-import Link from 'next/link';
 import { useState } from 'react';
 import { ShoppingCart, Menu, X, User, Search } from 'lucide-react';
+
+// Simulated product data for search results
+// In a real application, this would come from an API or a global store.
+const allSearchProducts = Array.from({ length: 20 }, (_, i) => ({
+  id: i + 1,
+  name: `Candle ${i + 1} - ${i % 3 === 0 ? 'Scented' : i % 3 === 1 ? 'Decorative' : 'Pillar'}`,
+  link: `/products/${i + 1}`, // Simulated link to product page
+}));
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [productMenuOpen, setProductMenuOpen] = useState(false);
+  // State to hold the current search query
+  const [searchQuery, setSearchQuery] = useState('');
+  // State to hold the filtered search results
+  const [filteredResults, setFilteredResults] = useState<typeof allSearchProducts>([]);
+  // State to control visibility of search results dropdown
+  const [showSearchResults, setShowSearchResults] = useState(false);
+
+  /**
+   * Filters products based on the search query.
+   * In a real app, this would likely be an async call to a search API.
+   * @param {string} query - The current search input.
+   */
+  const filterSearchProducts = (query: string) => {
+    if (query.trim() === '') {
+      setFilteredResults([]);
+      setShowSearchResults(false);
+      return;
+    }
+    const lowerCaseQuery = query.toLowerCase();
+    const results = allSearchProducts.filter(product =>
+      product.name.toLowerCase().includes(lowerCaseQuery)
+    );
+    setFilteredResults(results);
+    setShowSearchResults(true); // Show results when there's a query
+  };
+
+  /**
+   * Handles changes to the search input.
+   * @param {React.ChangeEvent<HTMLInputElement>} e - The change event.
+   */
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const query = e.target.value;
+    setSearchQuery(query);
+    filterSearchProducts(query); // Filter results as user types
+  };
+
+  /**
+   * Handles the search action when Enter is pressed or a search button is clicked.
+   * This would typically navigate to a full search results page.
+   */
+  const handleSearchSubmit = () => {
+    if (searchQuery.trim()) {
+      console.log('Performing full search for:', searchQuery);
+      // In a real application, you would typically:
+      // router.push(`/search?q=${searchQuery}`);
+      alert(`Navigating to search results page for: "${searchQuery}"`); // Using alert for immediate feedback
+      setSearchQuery(''); // Clear search query after submit
+      setFilteredResults([]); // Clear live results
+      setShowSearchResults(false); // Hide results
+    }
+  };
+
+  /**
+   * Handles key presses in the search input. Triggers search on 'Enter' key.
+   * @param {React.KeyboardEvent<HTMLInputElement>} e - The keyboard event.
+   */
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearchSubmit();
+    }
+  };
 
   return (
     <header className="shadow-md sticky top-0 bg-zinc-900 text-white z-50">
@@ -14,16 +82,16 @@ const Navbar = () => {
         
         {/* === Mobile Header === */}
         <div className="flex justify-between items-center md:hidden">
-          <Link href="/" className="text-2xl font-bold">Candlux</Link>
+          <a href="/" className="text-2xl font-bold">Candlux</a>
 
           <div className="flex items-center gap-4">
-            <Link href="/profile">
+            <a href="/profile">
               <User className="w-6 h-6 hover:text-yellow-300" />
-            </Link>
-            <Link href="/cart" className="relative">
+            </a>
+            <a href="/cart" className="relative">
               <ShoppingCart className="w-6 h-6 hover:text-yellow-300" />
               <span className="absolute -top-2 -right-2 bg-red-500 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">2</span>
-            </Link>
+            </a>
             <button onClick={() => setMenuOpen(!menuOpen)}>
               {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
@@ -31,61 +99,105 @@ const Navbar = () => {
         </div>
 
         {/* === Mobile Search Bar === */}
-        <div className="block md:hidden mt-3">
+        <div className="block md:hidden mt-3 relative"> {/* Added relative for absolute positioning of results */}
           <div className="flex items-center bg-zinc-800 px-3 py-1 rounded-full w-full">
             <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search candles..."
               className="bg-transparent outline-none ml-2 text-sm w-full text-white placeholder:text-gray-400"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+              onFocus={() => searchQuery.trim() !== '' && setShowSearchResults(true)} // Show results on focus if query exists
+              onBlur={() => setTimeout(() => setShowSearchResults(false), 100)} // Hide results on blur with a slight delay
             />
           </div>
+          {showSearchResults && filteredResults.length > 0 && (
+            <div className="absolute top-full left-0 right-0 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg mt-1 z-40 max-h-60 overflow-y-auto">
+              {filteredResults.map(product => (
+                <a
+                  key={product.id}
+                  href={product.link}
+                  className="block px-3 py-2 text-sm text-white hover:bg-zinc-700 transition-colors"
+                  onClick={() => {
+                    setShowSearchResults(false); // Hide results on click
+                    setSearchQuery(''); // Clear search query
+                  }}
+                >
+                  {product.name}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* === Desktop Header === */}
         <div className="hidden md:flex items-center justify-between">
           {/* Left: Logo */}
-          <Link href="/" className="text-2xl font-bold">Candlux</Link>
+          <a href="/" className="text-2xl font-bold">Candlux</a>
 
           {/* Center: Search Box */}
-          <div className="flex items-center bg-zinc-800 px-3 py-1 rounded-full w-full max-w-md mx-6">
+          <div className="flex items-center bg-zinc-800 px-3 py-1 rounded-full w-full max-w-md mx-6 relative"> {/* Added relative for absolute positioning of results */}
             <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
               placeholder="Search candles..."
               className="bg-transparent outline-none ml-2 text-sm w-full text-white placeholder:text-gray-400"
+              value={searchQuery}
+              onChange={handleSearchChange}
+              onKeyDown={handleKeyDown}
+              onFocus={() => searchQuery.trim() !== '' && setShowSearchResults(true)} // Show results on focus if query exists
+              onBlur={() => setTimeout(() => setShowSearchResults(false), 100)} // Hide results on blur with a slight delay
             />
+            {showSearchResults && filteredResults.length > 0 && (
+              <div className="absolute top-full left-0 right-0 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg mt-1 z-40 max-h-60 overflow-y-auto">
+                {filteredResults.map(product => (
+                  <a
+                    key={product.id}
+                    href={product.link}
+                    className="block px-3 py-2 text-sm text-white hover:bg-zinc-700 transition-colors"
+                    onClick={() => {
+                      setShowSearchResults(false); // Hide results on click
+                      setSearchQuery(''); // Clear search query
+                    }}
+                  >
+                    {product.name}
+                  </a>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Right: Menu Items */}
           <ul className="flex items-center gap-6 font-medium">
             <li>
-              <Link href="/" className="hover:text-yellow-300 transition">Home</Link>
+              <a href="/" className="hover:text-yellow-300 transition">Home</a>
             </li>
             <li className="relative group">
               <span className="hover:text-yellow-300 cursor-pointer transition">Products</span>
               <ul className="absolute hidden group-hover:flex flex-col bg-zinc-800 shadow-lg p-3 top-6 right-0 min-w-[160px] rounded-md z-50">
-                <li><Link href="/products" className="hover:text-yellow-300 py-1 block">All Candles</Link></li>
-                <li><Link href="/products/scented" className="hover:text-yellow-300 py-1 block">Scented</Link></li>
-                <li><Link href="/products/decorative" className="hover:text-yellow-300 py-1 block">Decorative</Link></li>
+                <li><a href="/products" onClick={() => setMenuOpen(false)}>All Candles</a></li>
+                <li><a href="/products/scented" onClick={() => setMenuOpen(false)}>Scented</a></li>
+                <li><a href="/products/decorative" onClick={() => setMenuOpen(false)}>Decorative</a></li>
               </ul>
             </li>
             <li>
-              <Link href="/about" className="hover:text-yellow-300 transition">About</Link>
+              <a href="/about" className="hover:text-yellow-300 transition">About</a>
             </li>
             <li>
-              <Link href="/contact" className="hover:text-yellow-300 transition">Contact</Link>
+              <a href="/contact" className="hover:text-yellow-300 transition">Contact</a>
             </li>
             <li>
-              <Link href="/profile">
+              <a href="/profile">
                 <User className="w-5 h-5 hover:text-yellow-300" />
-              </Link>
+              </a>
             </li>
             <li>
-              <Link href="/cart" className="relative">
+              <a href="/cart" className="relative">
                 <ShoppingCart className="w-5 h-5 hover:text-yellow-300" />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">2</span>
-              </Link>
+              </a>
             </li>
           </ul>
         </div>
@@ -95,7 +207,7 @@ const Navbar = () => {
       {menuOpen && (
         <div className="md:hidden bg-zinc-900 border-t border-zinc-800">
           <ul className="flex flex-col p-4 gap-3 font-medium text-white">
-            <li><Link href="/" onClick={() => setMenuOpen(false)}>Home</Link></li>
+            <li><a href="/" onClick={() => setMenuOpen(false)}>Home</a></li>
             <li>
               <details open={productMenuOpen} className="group">
                 <summary
@@ -105,14 +217,14 @@ const Navbar = () => {
                   Products
                 </summary>
                 <ul className="pl-4 mt-2 space-y-1">
-                  <li><Link href="/products" onClick={() => setMenuOpen(false)}>All Candles</Link></li>
-                  <li><Link href="/products/scented" onClick={() => setMenuOpen(false)}>Scented</Link></li>
-                  <li><Link href="/products/decorative" onClick={() => setMenuOpen(false)}>Decorative</Link></li>
+                  <li><a href="/products" onClick={() => setMenuOpen(false)}>All Candles</a></li>
+                  <li><a href="/products/scented" onClick={() => setMenuOpen(false)}>Scented</a></li>
+                  <li><a href="/products/decorative" onClick={() => setMenuOpen(false)}>Decorative</a></li>
                 </ul>
               </details>
             </li>
-            <li><Link href="/about" onClick={() => setMenuOpen(false)}>About</Link></li>
-            <li><Link href="/contact" onClick={() => setMenuOpen(false)}>Contact</Link></li>
+            <li><a href="/about" onClick={() => setMenuOpen(false)}>About</a></li>
+            <li><a href="/contact" onClick={() => setMenuOpen(false)}>Contact</a></li>
           </ul>
         </div>
       )}

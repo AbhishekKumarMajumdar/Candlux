@@ -2,10 +2,10 @@
 
 import Image from 'next/image';
 
-const products = Array.from({ length: 12 }, (_, i) => ({
+const products = Array.from({ length: 8 }, (_, i) => ({
   id: i + 1,
   name: `Candle ${i + 1}`,
-  image: `https://source.unsplash.com/400x400/?candle,${i}`,
+  image: `https://www.radliving.in/cdn/shop/products/rad5062.jpg?v=1663946515`,
   description: 'Premium scented candle for a soothing ambiance.',
   price: 599 + i * 20,
   discounted: 449 + i * 10,

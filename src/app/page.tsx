@@ -11,7 +11,8 @@ import ProductSection from "@/components/ProductSection";
 import ReelSection from "@/components/ReelSection";
 
 
-export default function Home() {
+export default async function Home() {
+  await new Promise((resolve) => setTimeout(resolve, 2000))
   return (
     <>
       <HeroCarousel />

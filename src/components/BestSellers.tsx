@@ -8,7 +8,7 @@ const bestSellers = [
   {
     id: 1,
     name: 'Amber Glow Jar',
-    image: 'https://images.unsplash.com/photo-1602525428466-5b0a38cf13a0?auto=format&fit=crop&w=800&q=80',
+    image: 'https://www.radliving.in/cdn/shop/products/rad5062.jpg?v=1663946515',
     originalPrice: '₹799',
     discountedPrice: '₹599',
     slug: 'amber-glow-jar',
@@ -16,7 +16,7 @@ const bestSellers = [
   {
     id: 2,
     name: 'Ocean Breeze Candle',
-    image: 'https://images.unsplash.com/photo-1601134467661-3a3b2c7610ec?auto=format&fit=crop&w=800&q=80',
+    image: 'https://www.radliving.in/cdn/shop/products/rad5062.jpg?v=1663946515',
     originalPrice: '₹899',
     discountedPrice: '₹699',
     slug: 'ocean-breeze-candle',
@@ -24,7 +24,7 @@ const bestSellers = [
   {
     id: 3,
     name: 'Mint Mist Votive',
-    image: 'https://images.unsplash.com/photo-1599915828887-265d709aba94?auto=format&fit=crop&w=800&q=80',
+    image: 'https://www.radliving.in/cdn/shop/products/rad5062.jpg?v=1663946515',
     originalPrice: '₹599',
     discountedPrice: '₹449',
     slug: 'mint-mist-votive',
@@ -32,7 +32,7 @@ const bestSellers = [
   {
     id: 4,
     name: 'Berry Bloom Tin',
-    image: 'https://images.unsplash.com/photo-1583938646644-41212e4a2b20?auto=format&fit=crop&w=800&q=80',
+    image: 'https://www.radliving.in/cdn/shop/products/rad5062.jpg?v=1663946515',
     originalPrice: '₹749',
     discountedPrice: '₹549',
     slug: 'berry-bloom-tin',
@@ -40,7 +40,7 @@ const bestSellers = [
   {
     id: 5,
     name: 'Citrus Sunshine',
-    image: 'https://images.unsplash.com/photo-1611075383548-67f2564eace4?auto=format&fit=crop&w=800&q=80',
+    image: 'https://www.radliving.in/cdn/shop/products/rad5062.jpg?v=1663946515',
     originalPrice: '₹899',
     discountedPrice: '₹699',
     slug: 'citrus-sunshine',
@@ -48,7 +48,7 @@ const bestSellers = [
   {
     id: 6,
     name: 'Woodland Escape',
-    image: 'https://images.unsplash.com/photo-1582719478165-2b3f43b6a683?auto=format&fit=crop&w=800&q=80',
+    image: 'https://www.radliving.in/cdn/shop/products/rad5062.jpg?v=1663946515',
     originalPrice: '₹849',
     discountedPrice: '₹649',
     slug: 'woodland-escape',
