@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { ShoppingCart, Eye } from 'lucide-react';
 import Link from 'next/link';
@@ -9,7 +10,7 @@ const products = [
     id: 1,
     name: 'Lavender Calm Candle',
     description: 'Soothing lavender fragrance for peaceful evenings.',
-    image: '/assets/images/theme.jpg', // 🔁 Local image
+    image: '/assets/images/theme.jpg',
     originalPrice: '₹699',
     discountedPrice: '₹499',
     slug: 'lavender-calm-candle',
@@ -44,6 +45,14 @@ const products = [
 ];
 
 const FeaturedProducts = () => {
+  const [hasMounted, setHasMounted] = useState(false);
+
+  useEffect(() => {
+    setHasMounted(true);
+  }, []);
+
+  if (!hasMounted) return null;
+
   return (
     <section className="bg-zinc-900 py-12 px-4 text-white">
       <div className="max-w-7xl mx-auto text-center">
@@ -55,7 +64,6 @@ const FeaturedProducts = () => {
               key={product.id}
               className="bg-zinc-800 rounded-xl shadow-md flex flex-col overflow-hidden transition hover:shadow-yellow-400/20"
             >
-              {/* Local image */}
               <div className="relative w-full aspect-[4/3]">
                 <Image
                   src={product.image}
@@ -63,7 +71,6 @@ const FeaturedProducts = () => {
                   fill
                   className="object-cover"
                   sizes="(max-width: 768px) 100vw, 25vw"
-                  priority
                 />
               </div>
 
