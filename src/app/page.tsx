@@ -9,6 +9,7 @@ import MoreProducts from "@/components/MoreProducts";
 import Banner from "@/components/Banner";
 import ProductSection from "@/components/ProductSection";
 import ReelSection from "@/components/ReelSection";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 
 export default async function Home() {
@@ -26,6 +27,7 @@ export default async function Home() {
       <Testimonials/>
       {/* <ReelSection/> */}
       <Contact/>
+      <WhatsAppButton/>
       {/* More sections like featured products here */}
     </>
   );

@@ -7,7 +7,7 @@ const Banner = () => {
     <section className="relative h-[60vh] w-full overflow-hidden bg-black">
       {/* Background image */}
       <Image
-        src="https://images.unsplash.com/photo-1598550880861-04be4dd6a95e?auto=format&fit=crop&w=1600&q=80"
+        src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3d5ed7d5-f99f-4cb1-a762-38fcefba530e.png'
         alt="Candle Banner"
         fill
         className="object-cover opacity-60"

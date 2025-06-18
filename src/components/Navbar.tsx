@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ShoppingCart, Menu, X, User, Search } from 'lucide-react';
+// Keep User and LogIn. LogOut is no longer needed for direct toggle.
+import { ShoppingCart, Menu, X, User, Search, LogIn } from 'lucide-react';
 
 // Simulated product data for search results
 // In a real application, this would come from an API or a global store.
@@ -14,12 +15,13 @@ const allSearchProducts = Array.from({ length: 20 }, (_, i) => ({
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [productMenuOpen, setProductMenuOpen] = useState(false);
-  // State to hold the current search query
   const [searchQuery, setSearchQuery] = useState('');
-  // State to hold the filtered search results
   const [filteredResults, setFilteredResults] = useState<typeof allSearchProducts>([]);
-  // State to control visibility of search results dropdown
   const [showSearchResults, setShowSearchResults] = useState(false);
+  // Initial state for login status. In a real app, this would come from auth context/store.
+  // For demonstration, you can manually toggle this in your browser's React DevTools or temporarily
+  // set it to true/false to see the change.
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // Set to true to see User icon, false for LogIn icon
 
   /**
    * Filters products based on the search query.
@@ -76,30 +78,40 @@ const Navbar = () => {
     }
   };
 
+  // No handleLoginToggle as a direct click handler on the icon anymore.
+  // The icon itself will be a link.
+
   return (
     <header className="shadow-md sticky top-0 bg-zinc-900 text-white z-50">
       <div className="max-w-7xl mx-auto px-4 py-3">
-        
+
         {/* === Mobile Header === */}
         <div className="flex justify-between items-center md:hidden">
           <a href="/" className="text-2xl font-bold">Candlux</a>
 
           <div className="flex items-center gap-4">
-            <a href="/profile">
-              <User className="w-6 h-6 hover:text-yellow-300" />
-            </a>
-            <a href="/cart" className="relative">
+            {/* Dynamic User/Login Icon for Mobile */}
+            {isLoggedIn ? (
+              <a href="/profile" aria-label="Go to Profile">
+                <User className="w-6 h-6 hover:text-yellow-300" />
+              </a>
+            ) : (
+              <a href="/login" aria-label="Login to your account">
+                <LogIn className="w-6 h-6 hover:text-yellow-300" />
+              </a>
+            )}
+            <a href="/cart" className="relative" aria-label="View Shopping Cart">
               <ShoppingCart className="w-6 h-6 hover:text-yellow-300" />
               <span className="absolute -top-2 -right-2 bg-red-500 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">2</span>
             </a>
-            <button onClick={() => setMenuOpen(!menuOpen)}>
+            <button onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close Menu" : "Open Menu"}>
               {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
             </button>
           </div>
         </div>
 
         {/* === Mobile Search Bar === */}
-        <div className="block md:hidden mt-3 relative"> {/* Added relative for absolute positioning of results */}
+        <div className="block md:hidden mt-3 relative">
           <div className="flex items-center bg-zinc-800 px-3 py-1 rounded-full w-full">
             <Search className="w-4 h-4 text-gray-400" />
             <input
@@ -109,8 +121,9 @@ const Navbar = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
-              onFocus={() => searchQuery.trim() !== '' && setShowSearchResults(true)} // Show results on focus if query exists
-              onBlur={() => setTimeout(() => setShowSearchResults(false), 100)} // Hide results on blur with a slight delay
+              onFocus={() => searchQuery.trim() !== '' && setShowSearchResults(true)}
+              onBlur={() => setTimeout(() => setShowSearchResults(false), 100)}
+              aria-label="Search products"
             />
           </div>
           {showSearchResults && filteredResults.length > 0 && (
@@ -121,8 +134,8 @@ const Navbar = () => {
                   href={product.link}
                   className="block px-3 py-2 text-sm text-white hover:bg-zinc-700 transition-colors"
                   onClick={() => {
-                    setShowSearchResults(false); // Hide results on click
-                    setSearchQuery(''); // Clear search query
+                    setShowSearchResults(false);
+                    setSearchQuery('');
                   }}
                 >
                   {product.name}
@@ -138,7 +151,7 @@ const Navbar = () => {
           <a href="/" className="text-2xl font-bold">Candlux</a>
 
           {/* Center: Search Box */}
-          <div className="flex items-center bg-zinc-800 px-3 py-1 rounded-full w-full max-w-md mx-6 relative"> {/* Added relative for absolute positioning of results */}
+          <div className="flex items-center bg-zinc-800 px-3 py-1 rounded-full w-full max-w-md mx-6 relative">
             <Search className="w-4 h-4 text-gray-400" />
             <input
               type="text"
@@ -147,8 +160,9 @@ const Navbar = () => {
               value={searchQuery}
               onChange={handleSearchChange}
               onKeyDown={handleKeyDown}
-              onFocus={() => searchQuery.trim() !== '' && setShowSearchResults(true)} // Show results on focus if query exists
-              onBlur={() => setTimeout(() => setShowSearchResults(false), 100)} // Hide results on blur with a slight delay
+              onFocus={() => searchQuery.trim() !== '' && setShowSearchResults(true)}
+              onBlur={() => setTimeout(() => setShowSearchResults(false), 100)}
+              aria-label="Search products"
             />
             {showSearchResults && filteredResults.length > 0 && (
               <div className="absolute top-full left-0 right-0 bg-zinc-800 border border-zinc-700 rounded-md shadow-lg mt-1 z-40 max-h-60 overflow-y-auto">
@@ -158,8 +172,8 @@ const Navbar = () => {
                     href={product.link}
                     className="block px-3 py-2 text-sm text-white hover:bg-zinc-700 transition-colors"
                     onClick={() => {
-                      setShowSearchResults(false); // Hide results on click
-                      setSearchQuery(''); // Clear search query
+                      setShowSearchResults(false);
+                      setSearchQuery('');
                     }}
                   >
                     {product.name}
@@ -188,17 +202,25 @@ const Navbar = () => {
             <li>
               <a href="/contact" className="hover:text-yellow-300 transition">Contact</a>
             </li>
+            {/* Dynamic User/Login Icon for Desktop */}
             <li>
-              <a href="/profile">
-                <User className="w-5 h-5 hover:text-yellow-300" />
-              </a>
+              {isLoggedIn ? (
+                <a href="/profile" aria-label="Go to Profile">
+                  <User className="w-5 h-5 hover:text-yellow-300" />
+                </a>
+              ) : (
+                <a href="/login" aria-label="Login to your account">
+                  <LogIn className="w-5 h-5 hover:text-yellow-300" />
+                </a>
+              )}
             </li>
             <li>
-              <a href="/cart" className="relative">
+              <a href="/cart" className="relative" aria-label="View Shopping Cart">
                 <ShoppingCart className="w-5 h-5 hover:text-yellow-300" />
                 <span className="absolute -top-2 -right-2 bg-red-500 text-xs text-white w-5 h-5 flex items-center justify-center rounded-full">2</span>
               </a>
             </li>
+            {/* Removed the 'Login/Logout' button */}
           </ul>
         </div>
       </div>
