@@ -4,7 +4,7 @@ import Image from 'next/image';
 
 const Banner = () => {
   return (
-    <section className="relative h-[60vh] w-full overflow-hidden bg-black">
+    <section className="relative h-[30vh]  lg:h-[50vh] w-full overflow-hidden bg-black">
       {/* Background image */}
       <Image
         src='https://storage.googleapis.com/workspace-0f70711f-8b4e-4d94-86f1-2a93ccde5887/image/3d5ed7d5-f99f-4cb1-a762-38fcefba530e.png'

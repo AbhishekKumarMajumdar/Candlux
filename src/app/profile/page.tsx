@@ -3,11 +3,7 @@
 import { useState } from 'react';
 import { User, ShoppingBag, Gift, Settings, Edit2 } from 'lucide-react'; // Icons for navigation
 
-/**
- * Mock User Data
- * In a real application, this data would be fetched from a backend
- * after user authentication.
- */
+
 const mockUserData = {
   name: 'John Doe',
   email: 'john.doe@example.com',
@@ -26,11 +22,7 @@ const mockUserData = {
   ],
 };
 
-/**
- * ProfilePage Component
- * Displays user profile information, orders, coupons, and account settings.
- * Uses a tabbed interface for navigation between sections.
- */
+
 export default function ProfilePage() {
   // State to manage the active tab: 'details', 'orders', 'coupons', 'settings'
   const [activeTab, setActiveTab] = useState('details');
@@ -43,15 +35,11 @@ export default function ProfilePage() {
   });
   const [isEditingProfile, setIsEditingProfile] = useState(false);
 
-  /**
-   * Handles saving the edited profile information.
-   * In a real app, this would send data to a backend API.
-   */
+ 
   const handleSaveProfile = () => {
     console.log('Saving profile:', editableProfile);
     alert('Profile saved successfully!');
-    // Here, you would typically dispatch an action or make an API call to update user data
-    // For this example, we just set editing mode to false.
+   
     setIsEditingProfile(false);
   };
 
@@ -65,8 +53,7 @@ export default function ProfilePage() {
   };
 
   /**
-   * Handles tracking order details.
-   * In a real app, this would navigate to an order tracking page or show a modal.
+  
    * @param {string} orderId - The ID of the order to track.
    */
   const handleTrackOrder = (orderId: string) => {

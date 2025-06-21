@@ -11,11 +11,14 @@ import ProductSection from "@/components/ProductSection";
 import ReelSection from "@/components/ReelSection";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
+import { Toaster } from 'react-hot-toast';
+
 
 export default async function Home() {
   await new Promise((resolve) => setTimeout(resolve, 2000))
   return (
     <>
+     <Toaster position="top-right" reverseOrder={false} />
       <HeroCarousel />
       <CategorySection/>
       <FeaturedProducts/>

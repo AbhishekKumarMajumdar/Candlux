@@ -34,6 +34,12 @@ const categories = [
     image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80',
     link: '/category/luxury',
   },
+  {
+    id: 6,
+    title: 'Luxury Line',
+    image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80',
+    link: '/category/luxury',
+  },
 ];
 
 const CategorySection = () => {
@@ -42,7 +48,7 @@ const CategorySection = () => {
       <div className="max-w-7xl mx-auto text-center">
         <h2 className="text-3xl font-bold mb-8">Shop by Category</h2>
 
-        <div className="flex md:flex-row lg:grid lg:grid-cols-5 gap-6 overflow-x-auto md:justify-start lg:justify-center px-2 scrollbar-hide">
+        <div className="flex md:flex-row lg:grid lg:grid-cols-6 gap-6 overflow-x-auto md:justify-start lg:justify-center px-2 scrollbar-hide">
           {categories.map((category) => (
             <Link
               key={category.id}
