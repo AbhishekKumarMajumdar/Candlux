@@ -1,3 +1,6 @@
+// 🔁 Prevent static optimization on API route
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from "next/server";
 import User from "@/models/User";
 import { connectDB } from "@/lib/dbConnect";
@@ -19,15 +22,18 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
-    if (!user.otp || !user.otpExpiry) {
-      return NextResponse.json({ error: "OTP has not been generated. Please request a new OTP." }, { status: 400 });
-    }
-
     if (user.isVerified) {
       return NextResponse.json({ message: "User already verified" }, { status: 200 });
     }
 
-    if (new Date() > user.otpExpiry) {
+    if (!user.otp || !user.otpExpiry) {
+      return NextResponse.json({
+        error: "OTP has not been generated. Please request a new OTP.",
+      }, { status: 400 });
+    }
+
+    const now = new Date();
+    if (now > user.otpExpiry) {
       return NextResponse.json({ error: "OTP has expired. Please request a new one." }, { status: 400 });
     }
 
@@ -43,6 +49,7 @@ export async function POST(req: NextRequest) {
     await user.save();
 
     return NextResponse.json({ message: "OTP verified successfully" }, { status: 200 });
+
   } catch (error) {
     console.error("OTP verification error:", error);
     return NextResponse.json({ error: "Server error" }, { status: 500 });
