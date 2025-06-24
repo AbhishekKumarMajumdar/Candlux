@@ -1,3 +1,6 @@
+// Prevent Next.js from statically analyzing or pre-rendering this API route
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from "next/server";
 import { connectDB } from "@/lib/dbConnect";
 import User from "@/models/User";
@@ -31,7 +34,10 @@ export async function POST(req: NextRequest) {
     const now = new Date();
     if (user.otpExpiry && user.otpExpiry > now) {
       const secondsLeft = Math.floor((user.otpExpiry.getTime() - now.getTime()) / 1000);
-      return NextResponse.json({ error: `Wait ${secondsLeft}s before resending OTP` }, { status: 429 });
+      return NextResponse.json(
+        { error: `Wait ${secondsLeft}s before resending OTP` },
+        { status: 429 }
+      );
     }
 
     const otp = generateOtp();
