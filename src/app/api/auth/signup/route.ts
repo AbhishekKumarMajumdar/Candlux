@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextResponse, NextRequest } from 'next/server';
 import bcrypt from 'bcryptjs';
 import User from '@/models/User';
@@ -11,7 +13,6 @@ export async function POST(req: NextRequest) {
 
     const { fullName, email, phone, password, confirmPassword } = await req.json();
 
-    // Validate fields
     if (!fullName || !email || !phone || !password || !confirmPassword) {
       return NextResponse.json({ error: 'All fields are required' }, { status: 400 });
     }
@@ -25,12 +26,11 @@ export async function POST(req: NextRequest) {
     });
 
     if (existingUser) {
-      const error =
+      const errorMsg =
         existingUser.email === email
           ? 'Email already exists.'
           : 'Phone number already in use.';
 
-      // If user exists but is not verified and OTP expired more than 1 min ago, allow resending OTP
       const now = new Date();
       const oneMinuteAgo = new Date(now.getTime() - 60 * 1000);
 
@@ -43,30 +43,14 @@ export async function POST(req: NextRequest) {
         existingUser.otpExpiry = otpExpiry;
         await existingUser.save();
 
-        const transporter = nodemailer.createTransport({
-          service: 'gmail',
-          auth: {
-            user: process.env.EMAIL_USER,
-            pass: process.env.EMAIL_PASS,
-          },
+        await sendOTPEmail(existingUser.fullName, existingUser.email, otp, true);
+
+        return NextResponse.json({
+          message: 'OTP re-sent to your email. Please verify.',
         });
-
-        const mailOptions = {
-          from: `Your App <${process.env.EMAIL_USER}>`,
-          to: email,
-          subject: 'Resent OTP for Email Verification',
-          html: `<h3>Hi again, ${existingUser.fullName}!</h3>
-                 <p>Your new OTP is:</p>
-                 <h2>${otp}</h2>
-                 <p>This OTP is valid for 10 minutes.</p>`
-        };
-
-        await transporter.sendMail(mailOptions);
-
-        return NextResponse.json({ message: 'OTP re-sent to your email. Please verify.' });
       }
 
-      return NextResponse.json({ error }, { status: 400 });
+      return NextResponse.json({ error: errorMsg }, { status: 400 });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -87,29 +71,52 @@ export async function POST(req: NextRequest) {
 
     await newUser.save();
 
-    const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    await sendOTPEmail(fullName, email, otp, false);
 
-    const mailOptions = {
-      from: `Your App <${process.env.EMAIL_USER}>`,
-      to: email,
-      subject: 'Email Verification OTP',
-      html: `<h3>Welcome, ${fullName}!</h3>
-             <p>Your OTP for email verification is:</p>
-             <h2>${otp}</h2>
-             <p>This OTP will expire in 10 minutes.</p>`,
-    };
-
-    await transporter.sendMail(mailOptions);
-
-    return NextResponse.json({ message: 'Signup successful. OTP sent to email.' }, { status: 201 });
+    return NextResponse.json(
+      { message: 'Signup successful. OTP sent to email.' },
+      { status: 201 }
+    );
   } catch (error) {
     console.error('Signup Error:', error);
     return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
   }
+}
+
+// ✅ Email sender utility
+async function sendOTPEmail(name: string, email: string, otp: string, isResend = false) {
+  const userEmail = process.env.EMAIL_USER;
+  const userPass = process.env.EMAIL_PASS;
+
+  if (!userEmail || !userPass) {
+    throw new Error('EMAIL_USER or EMAIL_PASS environment variables are missing.');
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: userEmail,
+      pass: userPass,
+    },
+  });
+
+  const subject = isResend
+    ? 'Resent OTP for Email Verification'
+    : 'Email Verification OTP';
+
+  const html = `
+    <h3>${isResend ? 'Hi again' : 'Welcome'}, ${name}!</h3>
+    <p>Your OTP for email verification is:</p>
+    <h2>${otp}</h2>
+    <p>This OTP is valid for 10 minutes.</p>
+  `;
+
+  const mailOptions = {
+    from: `Your App <${userEmail}>`,
+    to: email,
+    subject,
+    html,
+  };
+
+  await transporter.sendMail(mailOptions);
 }
