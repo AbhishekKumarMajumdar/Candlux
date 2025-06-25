@@ -24,7 +24,7 @@ const categories = [
   },
   {
     id: 4,
-    title: 'Minimal Collection',
+    title: 'Minimaal Collection',
     image: 'https://images.unsplash.com/photo-1587300003388-59208cc962cb?auto=format&fit=crop&w=800&q=80',
     link: '/category/minimal',
   },
@@ -58,7 +58,7 @@ const CategorySection = () => {
                   sizes="96px"
                 />
               </div>
-              <span className="text-sm font-medium">{category.title}</span>
+              <span className="text-sm  font-medium">{category.title}</span>
             </Link>
           ))}
         </div>
